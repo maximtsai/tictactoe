@@ -4,6 +4,7 @@ function createMenu(scene) {
         () => {
             destroyMenu(scene);
             createTicTacToeBoard(scene);
+            playSound('button');
         },
         {
             "ref": "startGame",
@@ -58,4 +59,5 @@ function createTicTacToeBoard(scene) {
 
 function onCreditsButtonClicked() {
     globalGameObjects.creditsText.visible = true;
+    playSound('button');
 }

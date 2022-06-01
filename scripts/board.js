@@ -68,7 +68,6 @@ class Board {
             {fontFamily: 'Times New Roman', fontSize: 28, color: '#000000', align: 'center'});
         this.victoryText.setOrigin(0.5, 0);
         this.boardAssets.push(this.victoryText);
-
     }
 
     onBoardHover() {
@@ -98,6 +97,10 @@ class Board {
         this.hoverIconO.visible = false;
     }
 
+
+    /**
+    * Click detected in the tic tac toe board
+    */
     onBoardClick() {
         if (this.gameFinished) {
             return;
@@ -106,6 +109,11 @@ class Board {
         let y = this.getInteractedCoordY();
         if (this.board[x][y] === EMPTY) {
             this.board[x][y] = this.currentTurn;
+            if (this.currentTurn === X) {
+                playSound('tic');
+            } else {
+                playSound('tac');
+            }
             this.createPieceAt(x, y, this.currentTurn);
             let hasWon = this.checkWinCondAfterPiecePlaced(x, y);
             let hasTied = this.checkAllSpacesFilled();
@@ -141,6 +149,7 @@ class Board {
         this.gameFinished = true;
         this.victoryText.setText(this.currentTurn.toUpperCase() + ' Wins!'); 
         this.createEndGameButtons();
+        playSound('win');
     }
 
     handleTie() {
@@ -149,6 +158,9 @@ class Board {
         this.createEndGameButtons();
     }
 
+    /**
+    * Creates a replay button and a menu button
+    */
     createEndGameButtons() {
         this.replayButton = new Button(
             this.scene,
@@ -182,7 +194,8 @@ class Board {
     }
 
     /**
-    * Check all 4 directions to see if a winning move has been made
+    * Check all 4 directions to see if a winning move has been made. Returs true if winning move 
+    *  detected. False otherwise.
     */
     checkWinCondAfterPiecePlaced(x, y) {
         let directionsToCheck = [{x: 1, y: 0}, {x: 0, y: 1}, {x: 1, y: 1}, {x: -1, y: 1}];
@@ -209,6 +222,9 @@ class Board {
         return false;
     }
 
+    /**
+    * Returns a boolean indicating if all spaces in the board have been filled
+    */
     checkAllSpacesFilled() {
         for (let i = 0; i < BOARD_SIZE; i++) {
             for (let j = 0; j < BOARD_SIZE; j++) {
@@ -248,6 +264,9 @@ class Board {
         return this.y + (y - 1) * TILE_SIZE;
     }
 
+    /**
+    * Resets the board to start a fresh new game of tic tac toe
+    */
     resetBoard() {
         for (let i in this.tempBoardAssets) {
             this.tempBoardAssets[i].destroy();
@@ -261,11 +280,14 @@ class Board {
             }
         }
         this.victoryText.setText('');
-
         this.replayButton.destroy();
         this.menuButton.destroy();
+        playSound('button');
     }
 
+    /**
+    * Fully cleans up the tic tac toe board and returns to the main menu
+    */
     returnMenu() {
         for (let i in this.tempBoardAssets) {
             if (this.tempBoardAssets[i]) {
@@ -281,5 +303,6 @@ class Board {
         this.menuButton.destroy();
         this.boardButton.destroy();
         createMenu(this.scene);
+        playSound('button');
     }
 }

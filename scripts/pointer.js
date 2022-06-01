@@ -27,8 +27,6 @@ function onPointerUp(pointer) {    gameVars.mousedown = false;
     if (buttonObj && buttonObj.checkCoordOver(checkX, checkY)) {
         buttonObj.onMouseUp();
     }
-
-    messageBus.publish('mouseUp');
 }
 
 // Converts position of mouse into position of hand

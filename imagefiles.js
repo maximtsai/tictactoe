@@ -4,5 +4,5 @@ const imageFilesPreload = [
 ];
 
 const imageFiles = [
-    {name: 'gameSprites', src: 'sprites/gamesprites.json'}
+    {name: 'gameSprites', src: 'sprites/gameSprites.json'}
 ];
