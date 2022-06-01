@@ -16,7 +16,7 @@ class Button {
         this.imageRefs = {};
         this.oldImageRef = null;
         this.currImageRef = null;
-        gameObjects.buttonList.push(this);
+        buttonManager.addToButtonList(this);
 
         this.handlePreload();
         this.setState(NORMAL);
@@ -61,7 +61,6 @@ class Button {
                 if (oldImage) {
                     newImage.setOrigin(oldImage.originX, oldImage.originY);
                 }
-                this.scene.add(newImage);
                 this.imageRefs[stateData.ref] = newImage;
             }
             newImage.visible = true;
@@ -119,12 +118,12 @@ class Button {
         let height = currImage.height * Math.abs(currImage.scaleY);
         let leftMost = currImage.x - currImage.originX * width;
         let rightMost = currImage.x + (1 - currImage.originX) * width;
-        if (x < leftMost || y > rightMost) {
+        if (x < leftMost || x > rightMost) {
             return false;
         }
         let topMost = currImage.y - currImage.originY * height;
         let botMost = currImage.y + (1 - currImage.originY) * height;
-        if (yPos < topMost || yPos > botMost) {
+        if (y < topMost || y > botMost) {
             return false
         }
         return true;
@@ -296,19 +295,6 @@ class Button {
         }
     }
 
-    tweenScale(params) {
-        let listOfImageRefs = [];
-        for (let i in this.imageRefs) {
-            listOfImageRefs.push(this.imageRefs[i]);
-        }
-        gameVarsTemp.updateTextAnim = gameObjects.scene.tweens.timeline({
-            targets: listOfImageRefs,
-            tweens: [
-                params
-            ]
-        });
-    }
-
     setOrigin(origX, origY) {
         for (let i in this.imageRefs) {
             this.imageRefs[i].setOrigin(origX, origY);
@@ -330,51 +316,12 @@ class Button {
         if (y !== undefined) {
             tweenObj.y = y;
         }
-        globalScene.tweens.add(tweenObj);
+        this.scene.tweens.add(tweenObj);
     }
 
-    disappear() {
-        if (this.disappeared) {
-            // already disappeared
-            return;
-        }
-        this.disappeared = true;
-        this.origX = this.normal.x;
-        this.origY = this.normal.y;
-        this.origScale = this.imageRefs[this.currImageRef].scaleX;
-        this.setPos(0, -9999);
-        this.setScale(0.001);
-    }
-
-    reappear() {
-        if (!this.disappeared) {
-            return;
-        }
-        this.disappeared = false;
-        if (this.origX !== undefined && this.origY !== undefined) {
-            this.setPos(this.origX, this.origY);
-        }
-        if (this.origScale !== undefined) {
-            this.setScale(this.origScale);
-        }
-    }
-
-    runFuncOnImage(func) {
-        let currImage = this.imageRefs[this.currImageRef];
-        func(currImage);
-    }
-
-    update() {
-
-    }
 
     destroy() {
-        for (let a in gameObjects.buttonList) {
-            if (gameObjects.buttonList[a] === this) {
-                gameObjects.buttonList.splice(parseInt(a), 1);
-                break;
-            }
-        }
+        buttonManager.removeButton(this);
 
         for (let i in this.imageRefs) {
             this.imageRefs[i].destroy();

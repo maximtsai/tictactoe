@@ -7,7 +7,6 @@ function onPointerDown(pointer) {
     let checkY = handPos.y;
     gameVars.lastmousedown.x = handPos.x;
     gameVars.lastmousedown.y = handPos.y;
-    gameObjects.hand.setPos(handPos.x, handPos.y);
 
     buttonManager.checkButtonClicked(checkX, checkY);
 }
@@ -16,19 +15,6 @@ function onPointerMove(pointer) {
     let handPos = mouseToHand(pointer.x, pointer.y);
     gameVars.mouseposx = handPos.x;
     gameVars.mouseposy = handPos.y;
-    gameObjects.hand.setPos(handPos.x, handPos.y);
-    if (gameObjects.maskImage) {
-        gameObjects.maskImage.goalX = handPos.x
-        gameObjects.maskImage.goalY = handPos.y;
-    }
-    if (gameObjects.draggedObj && gameVars.mousedown) {
-        let distToLastMouseX = gameVars.mouseposx - gameVars.lastmousedown.x;
-        let distToLastMouseY = gameVars.mouseposy - gameVars.lastmousedown.y;
-        let distToMouseDown = Math.sqrt(distToLastMouseX*distToLastMouseX + distToLastMouseY*distToLastMouseY)
-        if (distToMouseDown >= 3) {
-            gameObjects.draggedObj.setPos(gameVars.mouseposx - gameVars.halfWidth, gameVars.mouseposy);
-        }
-    }
 }
 
 function onPointerUp(pointer) {    gameVars.mousedown = false;
@@ -43,4 +29,18 @@ function onPointerUp(pointer) {    gameVars.mousedown = false;
     }
 
     messageBus.publish('mouseUp');
+}
+
+// Converts position of mouse into position of hand
+function mouseToHand(x, y) {
+    let bufferDist = 10;
+    let mouseDistFromCenterX = gameConsts.halfWidth - x;
+    let mouseDistFromCenterY = gameConsts.halfHeight - y;
+    let xRatio = gameConsts.halfWidth / (gameConsts.halfWidth - bufferDist);
+    let yRatio = gameConsts.halfHeight / (gameConsts.halfHeight - bufferDist);
+    let handX = gameConsts.halfWidth + xRatio * (x - gameConsts.halfWidth);
+    let handY = gameConsts.halfHeight + yRatio * (y - gameConsts.halfHeight);
+    handX = Math.min(Math.max(0, handX), gameConsts.width - 1);
+    handY = Math.min(Math.max(0, handY), gameConsts.height - 1);
+    return {x: handX, y: handY};
 }

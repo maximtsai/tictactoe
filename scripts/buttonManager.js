@@ -1,12 +1,13 @@
 class InternalButtonManager {
     constructor() {
         this.buttonList = [];
+        this.lastHovered = null;
         this.lastClickedButton = null;
     }
 
     update() {
-        let handX = gameObjects.hand.getPosX();
-        let handY = gameObjects.hand.getPosY();
+        let handX = gameVars.mouseposx;
+        let handY = gameVars.mouseposy;
         // check hovering
         let hasHovered = false;
         let currentHovered = null;
@@ -20,17 +21,13 @@ class InternalButtonManager {
                 break;
             }
         }
-        if (gameObjectsTemp.lastHovered && gameObjectsTemp.lastHovered !== currentHovered 
-            && gameObjectsTemp.lastHovered.getState() !== 'disable') {
-            gameObjectsTemp.lastHovered.setState('normal');
-            gameObjectsTemp.lastHovered.onHoverOut();
+        if (this.lastHovered && this.lastHovered !== currentHovered 
+            && this.lastHovered.getState() !== 'disable') {
+            this.lastHovered.setState('normal');
+            this.lastHovered.onHoverOut();
         }
-        if (gameObjectsTemp.lastHovered && !currentHovered) {
-            gameObjects.hand.setPointing(false);
-        } else if (!gameObjectsTemp.lastHovered && currentHovered) {
-            gameObjects.hand.setPointing(true);
-        }
-        gameObjectsTemp.lastHovered = currentHovered;
+
+        this.lastHovered = currentHovered;
     }
 
     checkButtonClicked(x, y) {
@@ -45,8 +42,21 @@ class InternalButtonManager {
 
     }
 
+    addToButtonList(button) {
+        this.buttonList.push(button);
+    }
+
     getLastClickedButton() {
         return this.lastClickedButton;
+    }
+
+    removeButton(button) {
+        for (let i in this.buttonList) {
+            if (this.buttonList[i] === button) {
+                this.buttonList.splice(parseInt(i), 1);
+                break;
+            }
+        }
     }
 }
 
