@@ -31,7 +31,6 @@ let gameVars = {
 };
 let globalGameObjects = {};
 let soundList = [];
-let updateFuncList = [];
 
 function preload ()
 {
@@ -128,19 +127,7 @@ function setupMouseInteraction(scene) {
     baseTouchLayer.on('pointerup', onPointerUp, scene);
 }
 
-function update(time, deltams) {
-    // Assume 60 fps or 1000/16.66666. Don't handle below 12 FPS.
-    let progressAmt = Math.min(5, deltams / 16.666666);
-    if (gameVars.skipUpdateFrame) {
-        gameVars.skipUpdateFrame = false;
-        return;
-    }
-
-    // Buncha custom functions to run each frame
-    for (let i = 0; i < updateFuncList.length; i++) {
-        updateFuncList[i](progressAmt);
-    }
-
+function update() {
     // check mouse
     buttonManager.update();
 
