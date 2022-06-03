@@ -46,39 +46,22 @@ function create ()
 function onPreloadComplete (scene)
 {
     setupMouseInteraction(scene);
-
-    let loadingBarBacking = scene.add.image(gameConsts.halfWidth, gameConsts.height - 30, 'whitePixel');
-    loadingBarBacking.alpha = 0.25;
-    loadingBarBacking.scaleY = 3;
-    loadingBarBacking.scaleX = 100;
-    loadingBarBacking.setDepth(100);
-    let loadingBar = scene.add.image(gameConsts.halfWidth, gameConsts.height - 30, 'whitePixel');
-    loadingBar.scaleY = 3;
-    loadingBar.setDepth(101);
-
-    // Setup loading bar logic
-    scene.load.on('progress', function (value) {
-        loadingBar.scaleX = value * loadingBarBacking.scaleX;
-    });
-    scene.load.on('complete', () => {
-        onLoadComplete(scene);
-        // Animate out the loading bar
-        scene.tweens.add({
-            targets: [loadingBar, loadingBarBacking],
-            scaleX: loadingBar.scaleX * 2,
-            scaleY: 0,
-            duration: 300,
-            ease: 'Quad.easeOut',
-            onComplete: () => {
-                loadingBar.destroy();
-            }
-        });
-    });
+    setupLoadingBar(scene);
 
     loadFileList(scene, audioFiles, 'audio');
     loadFileList(scene, imageFiles, 'atlas');
 
     scene.load.start();
+}
+
+function onLoadComplete(scene) {
+    initializeSounds(scene);
+    createMenu(scene);
+}
+
+function update() {
+    // check mouse
+    buttonManager.update();
 }
 
 function loadFileList(scene, filesList, type) {
@@ -96,11 +79,6 @@ function loadFileList(scene, filesList, type) {
             break;
         }
     }
-}
-
-function onLoadComplete(scene) {
-    initializeSounds(scene);
-    createMenu(scene);
 }
 
 function initializeSounds(scene) {
@@ -122,13 +100,7 @@ function setupMouseInteraction(scene) {
     let baseTouchLayer = scene.make.image({
         x: 0, y: 0, key: 'whitePixel', add: true, scale: {x: 1000, y: 1000}});
     baseTouchLayer.setInteractive();
-    baseTouchLayer.on('pointerdown', onPointerDown, scene);
-    baseTouchLayer.on('pointermove', onPointerMove, scene);
-    baseTouchLayer.on('pointerup', onPointerUp, scene);
-}
-
-function update() {
-    // check mouse
-    buttonManager.update();
-
+    baseTouchLayer.on('pointerdown', mouseManager.onPointerDown, scene);
+    baseTouchLayer.on('pointermove', mouseManager.onPointerMove, scene);
+    baseTouchLayer.on('pointerup', mouseManager.onPointerUp, scene);
 }
